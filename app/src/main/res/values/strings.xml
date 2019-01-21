@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">BakingApp</string>
+    <string name="title_item_detail">Item Detail</string>
+    <string name="title_recipestep_list">RecipeSteps</string>
+    <string name="title_recipestep_detail">RecipeStep Detail</string>
+    <string name="no_recipes_found">No Recipes Found!!!</string>
+    <string name="nutella_pie">Nutella Pie</string>
+    <string name="brownies">Brownies</string>
+    <string name="cheesecake">Cheesecake</string>
+    <string name="yellow_cake">Yellow Cake</string>
+    <string name="error_no_recipes_in_db">No Recipes in DB</string>
+    <string name="error_recipe_list_is_null">Recipe List is NULL!</string>
+    <string name="ingredients_card_title">Ingredients</string>
+    <string name="recipe_step_instructions_image_content_description">Recipe Step Instructions Image</string>
+    <string name="button_previous">Previous</string>
+    <string name="button_next">Next</string>
+    <string name="recipe_image_content_description">Recipe Image</string>
+    <string name="card_steps_title">Steps</string>
+</resources>
