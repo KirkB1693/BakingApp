@@ -1,7 +1,9 @@
 package com.example.android.bakingapp;
 
+import android.appwidget.AppWidgetManager;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -27,6 +29,7 @@ import com.example.android.bakingapp.Utilities.ConnectedToInternet;
 import com.example.android.bakingapp.Utilities.GridSpacesItemDecoration;
 import com.example.android.bakingapp.Utilities.GridUtils;
 import com.example.android.bakingapp.ViewModels.RecipesViewModel;
+import com.example.android.bakingapp.Widget.BakingAppWidgetProvider;
 import com.example.android.bakingapp.databinding.ActivityRecipesBinding;
 
 import java.util.ArrayList;
@@ -48,6 +51,8 @@ public class RecipesActivity extends AppCompatActivity  implements SelectRecipeR
     private SelectRecipeRecyclerAdapter mSelectRecipeAdapter;
     private RecyclerView mRecyclerView;
     private static final int SPACING = 15;
+    private int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
+    private boolean mCalledByWidget;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +70,17 @@ public class RecipesActivity extends AppCompatActivity  implements SelectRecipeR
         mRecyclerView.addItemDecoration(new GridSpacesItemDecoration(noOfColumns, SPACING, true, 0));
         mSelectRecipeAdapter.setClickListener(this);
 
+        Intent widgetIntent = getIntent();
+        Bundle widgetExtras = widgetIntent.getExtras();
+        if (widgetExtras != null) {
+            mAppWidgetId = widgetExtras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
+            setResult(RESULT_CANCELED);
+            if (mAppWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
+                mCalledByWidget = false;
+            } else {
+                mCalledByWidget = true;
+            }
+        }
 
         if (ConnectedToInternet.isConnectedToInternet(this)) {
             loadRecipesFromWeb(this);
@@ -218,6 +234,20 @@ public class RecipesActivity extends AppCompatActivity  implements SelectRecipeR
     @Override
     public void onRecipeItemClick(int position) {
         Recipes currentRecipe = mRecipesList.get(position);
+
+        // Update widgets to show proper ingredients list
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
+        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this, BakingAppWidgetProvider.class));
+        BakingAppWidgetProvider.updateBakingAppWidgets(this, appWidgetManager, currentRecipe, appWidgetIds);
+
+        // Configure widget if this activity was called by widget
+        if (mCalledByWidget) {
+            Intent widgetResult = new Intent();
+            widgetResult.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId);
+            setResult(RESULT_OK, widgetResult);
+            finish();
+        }
+
         // Start RecipeStepsActivity to display selected recipe's steps and ingredients
         Intent intent = new Intent(this, RecipeStepListActivity.class);
         intent.putExtra(RecipeStepListActivity.RECIPE_DATA_KEY, currentRecipe);
