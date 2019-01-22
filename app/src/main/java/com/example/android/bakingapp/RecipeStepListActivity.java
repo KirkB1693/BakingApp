@@ -87,6 +87,7 @@ public class RecipeStepListActivity extends AppCompatActivity implements RecipeS
             if (fragment instanceof RecipeStepsFragment) {
                 ((RecipeStepsFragment) fragment).setStepsAdapter(mRecipeStepsAdapter);
                 ((RecipeStepsFragment) fragment).setRecipe(mRecipe);
+                mCurrentStep = savedInstanceState.getInt(CURRENT_STEP_KEY);
             }
             if (mTwoPane) {
                 mCurrentStep = savedInstanceState.getInt(CURRENT_STEP_KEY);
@@ -165,24 +166,17 @@ public class RecipeStepListActivity extends AppCompatActivity implements RecipeS
         }
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(CURRENT_STEP_KEY, mCurrentStep);
+    }
 
     public void onNextClicked (View view) {
-        if (mDetailFragment == null) {
-            Fragment fragment = getSupportFragmentManager().findFragmentByTag(STEP_DETAILS_TAG);
-            if (fragment instanceof RecipeStepDetailFragment) {
-                mCurrentStep = ((RecipeStepDetailFragment) fragment).getCurrentStepIndex();
-            }
-        }
         setStepDetailsFragment(R.id.recipe_steps_fragment_container, mRecipe.getStepsList(), mCurrentStep + 1);
     }
 
     public void onPreviousClicked (View view) {
-        if (mDetailFragment == null) {
-            Fragment fragment = getSupportFragmentManager().findFragmentByTag(STEP_DETAILS_TAG);
-            if (fragment instanceof RecipeStepDetailFragment) {
-                mCurrentStep = ((RecipeStepDetailFragment) fragment).getCurrentStepIndex();
-            }
-        }
         setStepDetailsFragment(R.id.recipe_steps_fragment_container, mRecipe.getStepsList(), mCurrentStep - 1);
     }
 
