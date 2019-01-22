@@ -10,7 +10,7 @@ import java.util.List;
 
 public class RecipesViewModel extends AndroidViewModel {
 
-    private RecipesRepository mRepository;
+    private final RecipesRepository mRepository;
 
     private LiveData<List<Recipes>> mAllRecipes;
 

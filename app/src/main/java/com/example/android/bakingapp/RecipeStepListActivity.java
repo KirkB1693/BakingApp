@@ -8,6 +8,7 @@ import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.example.android.bakingapp.Adapters.RecipeStepsRecyclerAdapter;
 import com.example.android.bakingapp.RoomDatabase.Recipes;
@@ -23,7 +24,7 @@ import java.util.List;
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
  */
-public class RecipeStepListActivity extends AppCompatActivity implements RecipeStepsRecyclerAdapter.RecipeStepClickListener, RecipeStepDetailFragment.onPreviousClickListener, RecipeStepDetailFragment.onNextClickListener {
+public class RecipeStepListActivity extends AppCompatActivity implements RecipeStepsRecyclerAdapter.RecipeStepClickListener {
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
      * device.
@@ -38,7 +39,6 @@ public class RecipeStepListActivity extends AppCompatActivity implements RecipeS
     private Recipes mRecipe;
 
     private int mCurrentStep;
-    private boolean mVideoFullScreen;
 
     private RecipeStepsRecyclerAdapter mRecipeStepsAdapter;
     private RecipeStepDetailFragment mDetailFragment;
@@ -51,8 +51,8 @@ public class RecipeStepListActivity extends AppCompatActivity implements RecipeS
         Intent intent = getIntent();
         mRecipe = intent.getParcelableExtra(RECIPE_DATA_KEY);
 
-        mVideoFullScreen = getResources().getBoolean(R.bool.fullScreenVideo);
-        if (mVideoFullScreen) {
+        boolean videoFullScreen = getResources().getBoolean(R.bool.fullScreenVideo);
+        if (videoFullScreen) {
             if(getSupportActionBar()!=null) {
                 getSupportActionBar().hide();
             }
@@ -104,7 +104,7 @@ public class RecipeStepListActivity extends AppCompatActivity implements RecipeS
         }
     }
 
-    public void setStepDetailsFragment(int fragmentContainerId, List<Steps> stepsList, int currentStep) {
+    private void setStepDetailsFragment(int fragmentContainerId, List<Steps> stepsList, int currentStep) {
         setStepSelected(currentStep);
         RecipeStepDetailFragment recipeStepDetailFragment = new RecipeStepDetailFragment();
         recipeStepDetailFragment.setStepsList(stepsList);
@@ -162,22 +162,28 @@ public class RecipeStepListActivity extends AppCompatActivity implements RecipeS
             setStepDetailsFragment(R.id.step_detail_fragment, mRecipe.getStepsList(), position);
         } else {
             setStepDetailsFragment(R.id.recipe_steps_fragment_container, mRecipe.getStepsList(), position);
-            mDetailFragment.setPreviousClickListener(this);
-            mDetailFragment.setNextClickListener(this);
         }
     }
 
-    @Override
-    public void onPreviousClick(int position) {
-        setStepDetailsFragment(R.id.recipe_steps_fragment_container, mRecipe.getStepsList(), position -1);
-        mDetailFragment.setPreviousClickListener(this);
-        mDetailFragment.setNextClickListener(this);
+
+    public void onNextClicked (View view) {
+        if (mDetailFragment == null) {
+            Fragment fragment = getSupportFragmentManager().findFragmentByTag(STEP_DETAILS_TAG);
+            if (fragment instanceof RecipeStepDetailFragment) {
+                mCurrentStep = ((RecipeStepDetailFragment) fragment).getCurrentStepIndex();
+            }
+        }
+        setStepDetailsFragment(R.id.recipe_steps_fragment_container, mRecipe.getStepsList(), mCurrentStep + 1);
     }
 
-    @Override
-    public void onNextClick(int position) {
-        setStepDetailsFragment(R.id.recipe_steps_fragment_container, mRecipe.getStepsList(), position + 1);
-        mDetailFragment.setPreviousClickListener(this);
-        mDetailFragment.setNextClickListener(this);
+    public void onPreviousClicked (View view) {
+        if (mDetailFragment == null) {
+            Fragment fragment = getSupportFragmentManager().findFragmentByTag(STEP_DETAILS_TAG);
+            if (fragment instanceof RecipeStepDetailFragment) {
+                mCurrentStep = ((RecipeStepDetailFragment) fragment).getCurrentStepIndex();
+            }
+        }
+        setStepDetailsFragment(R.id.recipe_steps_fragment_container, mRecipe.getStepsList(), mCurrentStep - 1);
     }
+
 }

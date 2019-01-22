@@ -56,8 +56,6 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
     private boolean mTwoPane;
     private boolean mFullScreenVideo;
     private RelativeLayout mVideoContainer;
-    private RecipeStepDetailFragment.onPreviousClickListener mPreviousClickListener;
-    private RecipeStepDetailFragment.onNextClickListener mNextClickListener;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -147,29 +145,13 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
             nextButton.setVisibility(View.GONE);
         } else {
             previousButton.setVisibility(View.VISIBLE);
-            previousButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (mPreviousClickListener != null) {
-                        mPreviousClickListener.onPreviousClick(mCurrentStepIndex);
-                    }
-                }
-            });
             nextButton.setVisibility(View.VISIBLE);
-            nextButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (mNextClickListener != null) {
-                        mNextClickListener.onNextClick(mCurrentStepIndex);
-                    }
-                }
-            });
 
             // If first step make previous button invisible
             if (mCurrentStepIndex == 0) {
                 previousButton.setVisibility(View.INVISIBLE);
             }
-            // If last step maxt next button invisible
+            // If last step make next button invisible
             if (mCurrentStepIndex == mStepList.size() - 1) {
                 nextButton.setVisibility(View.INVISIBLE);
             }
@@ -244,11 +226,9 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
         } else {
             outState.putLong(STEP_VIDEO_POSITION_KEY, 0);
         }
+
     }
 
-    public void setPreviousClickListener(onPreviousClickListener mPreviousClickListener) {
-        this.mPreviousClickListener = mPreviousClickListener;
-    }
 
     @Override
     public void onClick(View view) {
@@ -256,15 +236,5 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
         mPlayerView.setVisibility(View.VISIBLE);
     }
 
-    public interface onPreviousClickListener {
-        void onPreviousClick(int position);
-    }
 
-    public void setNextClickListener(onNextClickListener mNextClickListener) {
-        this.mNextClickListener = mNextClickListener;
-    }
-
-    public interface onNextClickListener {
-        void onNextClick(int position);
-    }
 }

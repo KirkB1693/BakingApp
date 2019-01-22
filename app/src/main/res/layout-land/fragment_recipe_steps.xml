@@ -32,6 +32,8 @@
                 android:id="@+id/ingredients_title_tv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@color/accent"
+                android:padding="8dp"
                 android:gravity="center"
                 android:text="@string/ingredients_card_title"
                 android:textColor="@color/primary_text"
@@ -40,7 +42,6 @@
             <android.support.v4.widget.NestedScrollView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="8dp"
                 android:scrollbars="vertical">
 
                 <TextView
@@ -93,8 +94,8 @@
                 style="@style/TextAppearance.AppCompat.Headline"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
+                android:background="@color/accent"
+                android:padding="8dp"
                 android:gravity="center"
                 android:text="@string/card_steps_title"
                 android:textColor="@color/primary_text"

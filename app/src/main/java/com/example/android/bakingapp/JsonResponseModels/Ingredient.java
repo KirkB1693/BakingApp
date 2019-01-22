@@ -69,11 +69,6 @@ public class Ingredient implements Parcelable
         this.quantity = quantity;
     }
 
-    public Ingredient withQuantity(int quantity) {
-        this.quantity = quantity;
-        return this;
-    }
-
     public String getMeasure() {
         return measure;
     }
@@ -82,10 +77,6 @@ public class Ingredient implements Parcelable
         this.measure = measure;
     }
 
-    public Ingredient withMeasure(String measure) {
-        this.measure = measure;
-        return this;
-    }
 
     public String getIngredient() {
         return ingredient;
@@ -95,10 +86,6 @@ public class Ingredient implements Parcelable
         this.ingredient = ingredient;
     }
 
-    public Ingredient withIngredient(String ingredient) {
-        this.ingredient = ingredient;
-        return this;
-    }
 
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeValue(quantity);

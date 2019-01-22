@@ -75,15 +75,11 @@ public class RecipesActivity extends AppCompatActivity  implements SelectRecipeR
         if (widgetExtras != null) {
             mAppWidgetId = widgetExtras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
             setResult(RESULT_CANCELED);
-            if (mAppWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
-                mCalledByWidget = false;
-            } else {
-                mCalledByWidget = true;
-            }
+            mCalledByWidget = mAppWidgetId != AppWidgetManager.INVALID_APPWIDGET_ID;
         }
 
         if (ConnectedToInternet.isConnectedToInternet(this)) {
-            loadRecipesFromWeb(this);
+            loadRecipesFromWeb();
         }
 
         setupLiveDataObserver();
@@ -114,7 +110,7 @@ public class RecipesActivity extends AppCompatActivity  implements SelectRecipeR
         });
     }
 
-    private void loadRecipesFromWeb(RecipesActivity recipesActivity) {
+    private void loadRecipesFromWeb() {
         Retrofit retrofit = ApiClient.getClient();
         mRecipesApiService = retrofit.create(ApiService.class);
 

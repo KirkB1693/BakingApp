@@ -42,8 +42,8 @@ dependencies {
     implementation 'com.google.android.exoplayer:exoplayer-ui:2.7.3'
 
     //Retrofit
-    implementation 'com.squareup.retrofit2:retrofit:2.3.0'
-    implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
+    implementation 'com.squareup.retrofit2:retrofit:2.4.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
 
     // Room components
     implementation "android.arch.persistence.room:runtime:1.1.1"

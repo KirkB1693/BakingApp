@@ -2,7 +2,6 @@ package com.example.android.bakingapp.ViewModels;
 
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
 import android.os.AsyncTask;
 
 import com.example.android.bakingapp.RoomDatabase.Recipes;
@@ -14,7 +13,6 @@ import java.util.List;
 public class RecipesRepository {
     private final RecipesDao mRecipesDao;
     private final LiveData<List<Recipes>> mAllRecipes;
-    private final MutableLiveData<List<Recipes>> mSearchResults = new MutableLiveData<>();
 
     RecipesRepository(Application application) {
         RecipesRoomDatabase db = RecipesRoomDatabase.getInstance(application);
@@ -33,7 +31,7 @@ public class RecipesRepository {
 
     private static class InsertAsyncTask extends AsyncTask<List<Recipes>, Void, Void> {
 
-        private RecipesDao mAsyncRecipesDao;
+        private final RecipesDao mAsyncRecipesDao;
 
         InsertAsyncTask (RecipesDao recipesDao) {mAsyncRecipesDao = recipesDao;}
 
