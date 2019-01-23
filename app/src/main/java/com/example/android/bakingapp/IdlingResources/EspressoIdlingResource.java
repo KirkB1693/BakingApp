@@ -3,7 +3,8 @@ package com.example.android.bakingapp.IdlingResources;
 import android.support.test.espresso.IdlingResource;
 
 /**
- * Contains a static reference IdlingResource, and should be available only in a mock build type.
+ * This code was found at the following website:
+ * https://android.jlelse.eu/integrate-espresso-idling-resources-in-your-app-to-build-flexible-ui-tests-c779e24f5057
  */
 public class EspressoIdlingResource {
 
