@@ -9,7 +9,7 @@
 
     <FrameLayout
         android:id="@+id/steps_list_fragment"
-        android:layout_width="300dp"
+        android:layout_width="@dimen/twopane_step_fragment_width"
         android:layout_height="match_parent"
         tools:layout="@layout/fragment_recipe_steps" />
 

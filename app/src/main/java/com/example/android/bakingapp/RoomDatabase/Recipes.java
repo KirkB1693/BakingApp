@@ -51,7 +51,9 @@ public class Recipes implements Parcelable {
         recipeName = in.readString();
         recipeServings = in.readInt();
         recipeImage = in.readString();
+        //noinspection unchecked
         ingredientsList = in.readArrayList(getClass().getClassLoader());
+        //noinspection unchecked
         stepsList = in.readArrayList(getClass().getClassLoader());
     }
 

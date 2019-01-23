@@ -64,12 +64,12 @@ public class RecipesResponse implements Parcelable
 
     /**
      *
-     * @param ingredients
-     * @param id
-     * @param servings
-     * @param name
-     * @param image
-     * @param steps
+     * @param ingredients A list of the ingredients for the recipe
+     * @param id The recipe number, hopefully unique, as specified by the website our data is pulled from
+     * @param servings The number of servings for the recipe (how many people it feeds)
+     * @param name The recipe name
+     * @param image A URL with the recipe image location
+     * @param steps A list of steps for the recipe
      */
     public RecipesResponse(int id, String name, List<Ingredient> ingredients, List<Step> steps, int servings, String image) {
         super();
@@ -89,22 +89,12 @@ public class RecipesResponse implements Parcelable
         this.id = id;
     }
 
-    public RecipesResponse withId(int id) {
-        this.id = id;
-        return this;
-    }
-
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public RecipesResponse withName(String name) {
-        this.name = name;
-        return this;
     }
 
     public List<Ingredient> getIngredients() {
@@ -115,22 +105,12 @@ public class RecipesResponse implements Parcelable
         this.ingredients = ingredients;
     }
 
-    public RecipesResponse withIngredients(List<Ingredient> ingredients) {
-        this.ingredients = ingredients;
-        return this;
-    }
-
     public List<Step> getSteps() {
         return steps;
     }
 
     public void setSteps(List<Step> steps) {
         this.steps = steps;
-    }
-
-    public RecipesResponse withSteps(List<Step> steps) {
-        this.steps = steps;
-        return this;
     }
 
     public int getServings() {
@@ -141,11 +121,6 @@ public class RecipesResponse implements Parcelable
         this.servings = servings;
     }
 
-    public RecipesResponse withServings(int servings) {
-        this.servings = servings;
-        return this;
-    }
-
     public String getImage() {
         return image;
     }
@@ -154,10 +129,6 @@ public class RecipesResponse implements Parcelable
         this.image = image;
     }
 
-    public RecipesResponse withImage(String image) {
-        this.image = image;
-        return this;
-    }
 
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeValue(id);

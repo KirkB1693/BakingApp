@@ -9,14 +9,16 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
+import android.support.test.espresso.IdlingResource;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.Toast;
 
 import com.example.android.bakingapp.Adapters.SelectRecipeRecyclerAdapter;
+import com.example.android.bakingapp.IdlingResources.EspressoIdlingResource;
 import com.example.android.bakingapp.JsonResponseModels.Ingredient;
 import com.example.android.bakingapp.JsonResponseModels.RecipesResponse;
 import com.example.android.bakingapp.JsonResponseModels.Step;
@@ -52,7 +54,23 @@ public class RecipesActivity extends AppCompatActivity  implements SelectRecipeR
     private RecyclerView mRecyclerView;
     private static final int SPACING = 15;
     private int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
-    private boolean mCalledByWidget;
+    private boolean mConfigureWidget;
+
+    // The Idling Resource which will be null in production.
+    @Nullable
+    private IdlingResource mIdlingResource;
+
+    /**
+     * Only called from test, creates and returns a new {@link EspressoIdlingResource}.
+     */
+    @VisibleForTesting
+    @NonNull
+    public IdlingResource getIdlingResource() {
+        if (mIdlingResource == null) {
+            mIdlingResource = EspressoIdlingResource.getIdlingResource();
+        }
+        return mIdlingResource;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +79,7 @@ public class RecipesActivity extends AppCompatActivity  implements SelectRecipeR
         mSelectRecipeBinding = DataBindingUtil.setContentView(this, R.layout.activity_recipes);
         mRecipesViewModel = ViewModelProviders.of(this).get(RecipesViewModel.class);
         mSelectRecipeAdapter = new SelectRecipeRecyclerAdapter(this, new ArrayList<Recipes>());
+        EspressoIdlingResource.increment();
 
         mRecyclerView = mSelectRecipeBinding.selectRecipeRv;
         int noOfColumns = GridUtils.calculateNoOfColumns(this);
@@ -75,7 +94,7 @@ public class RecipesActivity extends AppCompatActivity  implements SelectRecipeR
         if (widgetExtras != null) {
             mAppWidgetId = widgetExtras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
             setResult(RESULT_CANCELED);
-            mCalledByWidget = mAppWidgetId != AppWidgetManager.INVALID_APPWIDGET_ID;
+            mConfigureWidget = mAppWidgetId != AppWidgetManager.INVALID_APPWIDGET_ID;
         }
 
         if (ConnectedToInternet.isConnectedToInternet(this)) {
@@ -83,6 +102,8 @@ public class RecipesActivity extends AppCompatActivity  implements SelectRecipeR
         }
 
         setupLiveDataObserver();
+
+        EspressoIdlingResource.decrement();
     }
 
     private void setupLiveDataObserver() {
@@ -90,6 +111,7 @@ public class RecipesActivity extends AppCompatActivity  implements SelectRecipeR
         mRecipesViewModel.getAllRecipes().observe(this , new Observer<List<Recipes>>() {
             @Override
             public void onChanged(@Nullable final List<Recipes> recipesList) {
+                EspressoIdlingResource.increment();
                 mRecipesList = recipesList;
                 if (recipesList != null) {
                     if (recipesList.size() > 0) {
@@ -105,6 +127,7 @@ public class RecipesActivity extends AppCompatActivity  implements SelectRecipeR
                     showEmptyState();
                     mSelectRecipeBinding.emptySelectRecipeTv.setText(getString(R.string.error_recipe_list_is_null));
                 }
+                EspressoIdlingResource.decrement();
 
             }
         });
@@ -117,6 +140,7 @@ public class RecipesActivity extends AppCompatActivity  implements SelectRecipeR
         showProgressBar();
 
         try {
+            EspressoIdlingResource.increment();
             Call <List<RecipesResponse>> call;
                 call = callGetRecipesApi();
 
@@ -131,25 +155,23 @@ public class RecipesActivity extends AppCompatActivity  implements SelectRecipeR
                         showEmptyState();
                         mSelectRecipeBinding.emptySelectRecipeTv.setText(getString(R.string.no_recipes_found));
                     }
-
+                    EspressoIdlingResource.decrement();
                 }
 
                 @Override
                 public void onFailure(@NonNull Call<List<RecipesResponse>> call, @NonNull Throwable t) {
                     Timber.d("Error Fetching Data! %s", t.getMessage());
-                    Toast.makeText(RecipesActivity.this, "Error Fetching Data!", Toast.LENGTH_SHORT).show();
 
                 }
             });
         } catch (Exception e) {
-            Timber.d(e.getMessage());
-            Toast.makeText(this, e.toString(), Toast.LENGTH_SHORT).show();
+            Timber.d("Error with Retrofit Call! %s",e.getMessage());
         }
     }
 
     private void saveWebDataToDatabase() {
         List<Recipes> recipesToAdd = new ArrayList<>();
-
+        EspressoIdlingResource.increment();
         if (mRecipesResponseList != null) {
             for (int i = 0; i < mRecipesResponseList.size(); i++) {
                 RecipesResponse currentRecipeResponse = mRecipesResponseList.get(i);
@@ -175,6 +197,7 @@ public class RecipesActivity extends AppCompatActivity  implements SelectRecipeR
         if (recipesToAdd.size() > 0) {
             mRecipesViewModel.insertAllRecipes(recipesToAdd);
         }
+        EspressoIdlingResource.decrement();
     }
 
     private List<Steps> getCurrentStepsFromRecipeResponse(RecipesResponse currentRecipeResponse) {
@@ -231,22 +254,25 @@ public class RecipesActivity extends AppCompatActivity  implements SelectRecipeR
     public void onRecipeItemClick(int position) {
         Recipes currentRecipe = mRecipesList.get(position);
 
+        EspressoIdlingResource.increment();
         // Update widgets to show proper ingredients list
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
         int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this, BakingAppWidgetProvider.class));
         BakingAppWidgetProvider.updateBakingAppWidgets(this, appWidgetManager, currentRecipe, appWidgetIds);
 
-        // Configure widget if this activity was called by widget
-        if (mCalledByWidget) {
+        // Configure widget
+        if (mConfigureWidget) {
             Intent widgetResult = new Intent();
             widgetResult.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId);
             setResult(RESULT_OK, widgetResult);
             finish();
-        }
+        } else {
 
-        // Start RecipeStepsActivity to display selected recipe's steps and ingredients
-        Intent intent = new Intent(this, RecipeStepListActivity.class);
-        intent.putExtra(RecipeStepListActivity.RECIPE_DATA_KEY, currentRecipe);
-        startActivity(intent);
+            // Start RecipeStepsActivity to display selected recipe's steps and ingredients
+            Intent intent = new Intent(this, RecipeStepListActivity.class);
+            intent.putExtra(RecipeStepListActivity.RECIPE_DATA_KEY, currentRecipe);
+            startActivity(intent);
+        }
+        EspressoIdlingResource.decrement();
     }
 }

@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.android.bakingapp.Adapters.RecipeStepsRecyclerAdapter;
+import com.example.android.bakingapp.IdlingResources.EspressoIdlingResource;
 import com.example.android.bakingapp.RoomDatabase.Ingredients;
 import com.example.android.bakingapp.RoomDatabase.Recipes;
 
@@ -27,9 +28,11 @@ public class RecipeStepsFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_recipe_steps, container, false);
-        TextView ingredientsTextView = (TextView) view.findViewById(R.id.ingredients_tv);
+        TextView ingredientsTextView = view.findViewById(R.id.ingredients_tv);
+        EspressoIdlingResource.increment();
         ingredientsTextView.setText(buildIngredientsList());
         setupRecyclerView(view);
+        EspressoIdlingResource.decrement();
         return view;
     }
 

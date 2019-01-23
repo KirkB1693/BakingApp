@@ -20,7 +20,7 @@ import java.util.List;
 public class BakingAppWidgetProvider extends AppWidgetProvider {
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-    static void updateBakingAppWidget (Context context, AppWidgetManager appWidgetManager, Recipes recipe, int appWidgetId) {
+    private static void updateBakingAppWidget(Context context, AppWidgetManager appWidgetManager, Recipes recipe, int appWidgetId) {
         RemoteViews remoteViews = getRecipeRemoteView(context, recipe, appWidgetId);
         appWidgetManager.updateAppWidget(appWidgetId, remoteViews);
     }

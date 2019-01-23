@@ -13,11 +13,11 @@
         android:id="@+id/widget_ingredients_title_tv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="4dp"
+        android:layout_margin="@dimen/widget_small_margin"
         android:gravity="center"
         android:text="@string/ingredients_card_title"
         android:textColor="@color/primary_text"
-        android:textSize="16sp"
+        android:textSize="@dimen/widget_title_textsize"
         android:textStyle="bold"/>
 
 
@@ -26,11 +26,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_margin="4dp"
+        android:layout_margin="@dimen/widget_small_margin"
         android:background="@color/primary_light"
-        android:padding="4dp"
+        android:padding="@dimen/widget_small_margin"
         android:textColor="@color/primary_text"
-        android:textSize="12sp"
+        android:textSize="@dimen/widget_ingredient_textsize"
         tools:text="List of ingredients..." />
 
 </LinearLayout>

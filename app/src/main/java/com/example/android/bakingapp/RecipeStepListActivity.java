@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.example.android.bakingapp.Adapters.RecipeStepsRecyclerAdapter;
+import com.example.android.bakingapp.IdlingResources.EspressoIdlingResource;
 import com.example.android.bakingapp.RoomDatabase.Recipes;
 import com.example.android.bakingapp.RoomDatabase.Steps;
 
@@ -41,7 +42,6 @@ public class RecipeStepListActivity extends AppCompatActivity implements RecipeS
     private int mCurrentStep;
 
     private RecipeStepsRecyclerAdapter mRecipeStepsAdapter;
-    private RecipeStepDetailFragment mDetailFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,27 +51,22 @@ public class RecipeStepListActivity extends AppCompatActivity implements RecipeS
         Intent intent = getIntent();
         mRecipe = intent.getParcelableExtra(RECIPE_DATA_KEY);
 
-        boolean videoFullScreen = getResources().getBoolean(R.bool.fullScreenVideo);
-        if (videoFullScreen) {
-            if(getSupportActionBar()!=null) {
-                getSupportActionBar().hide();
-            }
-        } else {
-            if(getSupportActionBar()!=null) {
-                getSupportActionBar().show();
-            }
-            this.setTitle(mRecipe.getRecipeName());
 
-            // Show the Up button in the action bar.
-            ActionBar actionBar = getSupportActionBar();
-            if (actionBar != null) {
-                actionBar.setDisplayHomeAsUpEnabled(true);
-            }
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().show();
+        }
+        this.setTitle(mRecipe.getRecipeName());
+
+        // Show the Up button in the action bar.
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
 
         mTwoPane = getResources().getBoolean(R.bool.twoPaneMode);
 
+        EspressoIdlingResource.increment();
         setupStepsRecyclerViewAdapter();
 
         if (savedInstanceState == null) {
@@ -94,6 +89,7 @@ public class RecipeStepListActivity extends AppCompatActivity implements RecipeS
                 setStepSelected(mCurrentStep);
             }
         }
+        EspressoIdlingResource.decrement();
 
     }
 
@@ -111,7 +107,6 @@ public class RecipeStepListActivity extends AppCompatActivity implements RecipeS
         recipeStepDetailFragment.setStepsList(stepsList);
         recipeStepDetailFragment.setCurrentStep(currentStep);
         recipeStepDetailFragment.setIsTwoPane(mTwoPane);
-        mDetailFragment = recipeStepDetailFragment;
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(fragmentContainerId, recipeStepDetailFragment, STEP_DETAILS_TAG).addToBackStack(null).commit();
     }
@@ -123,6 +118,11 @@ public class RecipeStepListActivity extends AppCompatActivity implements RecipeS
         if (fragment instanceof RecipeStepDetailFragment) {
             mCurrentStep = ((RecipeStepDetailFragment) fragment).getCurrentStepIndex();
             setStepSelected(mCurrentStep);
+        } else {
+
+                if(getSupportActionBar()!=null) {
+                    getSupportActionBar().show();
+                }
         }
     }
 
@@ -162,6 +162,12 @@ public class RecipeStepListActivity extends AppCompatActivity implements RecipeS
         if (mTwoPane) {
             setStepDetailsFragment(R.id.step_detail_fragment, mRecipe.getStepsList(), position);
         } else {
+            boolean videoFullScreen = getResources().getBoolean(R.bool.fullScreenVideo);
+            if (videoFullScreen) {
+                if (getSupportActionBar() != null) {
+                    getSupportActionBar().hide();
+                }
+            }
             setStepDetailsFragment(R.id.recipe_steps_fragment_container, mRecipe.getStepsList(), position);
         }
     }
@@ -172,11 +178,11 @@ public class RecipeStepListActivity extends AppCompatActivity implements RecipeS
         outState.putInt(CURRENT_STEP_KEY, mCurrentStep);
     }
 
-    public void onNextClicked (View view) {
+    public void onNextClicked(View view) {
         setStepDetailsFragment(R.id.recipe_steps_fragment_container, mRecipe.getStepsList(), mCurrentStep + 1);
     }
 
-    public void onPreviousClicked (View view) {
+    public void onPreviousClicked(View view) {
         setStepDetailsFragment(R.id.recipe_steps_fragment_container, mRecipe.getStepsList(), mCurrentStep - 1);
     }
 

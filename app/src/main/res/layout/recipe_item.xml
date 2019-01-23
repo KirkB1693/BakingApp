@@ -11,9 +11,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        card_view:cardCornerRadius="5dp"
+        card_view:cardCornerRadius="@dimen/card_corner_radius"
         card_view:cardBackgroundColor="@color/primary_light"
-        card_view:cardElevation="5dp">
+        card_view:cardElevation="@dimen/card_elevation">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -36,7 +36,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:textColor="@color/primary_text"
-                android:textSize="15sp"
+                android:textSize="@dimen/recipe_item_textsize"
                 tools:text="Recipe # 1"
                 android:layout_gravity="center"
                 android:layout_weight=".7"/>

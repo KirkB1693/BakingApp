@@ -35,8 +35,9 @@ public class RecipesRepository {
 
         InsertAsyncTask (RecipesDao recipesDao) {mAsyncRecipesDao = recipesDao;}
 
+        @SafeVarargs
         @Override
-        protected Void doInBackground(final List<Recipes>... lists) {
+        protected final Void doInBackground(final List<Recipes>... lists) {
             mAsyncRecipesDao.insertRecipes(lists[0]);
             return null;
         }

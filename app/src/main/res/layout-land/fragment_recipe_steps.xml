@@ -11,14 +11,14 @@
         android:id="@+id/ingredients_cv"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginStart="@dimen/normal_margin"
+        android:layout_marginLeft="@dimen/normal_margin"
+        android:layout_marginTop="@dimen/normal_margin"
+        android:layout_marginBottom="@dimen/normal_margin"
         app:cardBackgroundColor="@color/accent"
-        app:cardCornerRadius="5dp"
-        app:cardElevation="5dp"
-        app:contentPadding="5dp"
+        app:cardCornerRadius="@dimen/card_corner_radius"
+        app:cardElevation="@dimen/card_elevation"
+        app:contentPadding="@dimen/recipe_steps_card_padding"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toStartOf="@id/guideline">
@@ -33,11 +33,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/accent"
-                android:padding="8dp"
+                android:padding="@dimen/recipe_steps_card_padding"
                 android:gravity="center"
                 android:text="@string/ingredients_card_title"
                 android:textColor="@color/primary_text"
-                android:textSize="24sp" />
+                android:textSize="@dimen/recipe_steps_title_textsize" />
 
             <android.support.v4.widget.NestedScrollView
                 android:layout_width="match_parent"
@@ -52,7 +52,7 @@
                     android:padding="8dp"
                     android:background="@color/primary_light"
                     android:textColor="@color/primary_text"
-                    android:textSize="16sp"
+                    android:textSize="@dimen/recipe_step_ingredient_textsize"
                     tools:text="List of ingredients..." />
             </android.support.v4.widget.NestedScrollView>
 
@@ -72,14 +72,14 @@
         android:id="@+id/steps_cv"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
+        android:layout_marginStart="@dimen/normal_margin"
+        android:layout_marginLeft="@dimen/normal_margin"
+        android:layout_marginEnd="@dimen/normal_margin"
+        android:layout_marginRight="@dimen/normal_margin"
         app:cardBackgroundColor="@color/accent"
-        app:cardCornerRadius="5dp"
-        app:cardElevation="5dp"
-        app:contentPadding="5dp"
+        app:cardCornerRadius="@dimen/card_corner_radius"
+        app:cardElevation="@dimen/card_elevation"
+        app:contentPadding="@dimen/recipe_steps_card_padding"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/guideline"
         app:layout_constraintTop_toTopOf="@+id/ingredients_cv">
@@ -95,11 +95,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/accent"
-                android:padding="8dp"
+                android:padding="@dimen/recipe_steps_card_padding"
                 android:gravity="center"
                 android:text="@string/card_steps_title"
                 android:textColor="@color/primary_text"
-                android:textSize="24sp" />
+                android:textSize="@dimen/recipe_steps_title_textsize" />
 
         </LinearLayout>
 
@@ -109,12 +109,12 @@
         android:id="@+id/recipe_steps_rv"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="4dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginStart="@dimen/normal_margin"
+        android:layout_marginLeft="@dimen/normal_margin"
+        android:layout_marginTop="@dimen/small_margin"
+        android:layout_marginEnd="@dimen/normal_margin"
+        android:layout_marginRight="@dimen/normal_margin"
+        android:layout_marginBottom="@dimen/normal_margin"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/guideline"

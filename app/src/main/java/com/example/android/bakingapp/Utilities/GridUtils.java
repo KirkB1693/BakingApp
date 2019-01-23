@@ -12,11 +12,6 @@ public class GridUtils {
         int posterWidth = (int) (context.getResources().getDimension(R.dimen.recipe_card_width) / displayMetrics.density);
         int noOfColumns = (int) (dpWidth / posterWidth );
         if (noOfColumns == 0){noOfColumns=1;}
-        int remaining = (int) (displayMetrics.widthPixels - (noOfColumns * context.getResources().getDimension(R.dimen.recipe_card_width)));
-        if (remaining / (noOfColumns + 1) < ((noOfColumns+1))) {
-            noOfColumns--;
-            remaining = (int) (displayMetrics.widthPixels - (noOfColumns * context.getResources().getDimension(R.dimen.recipe_card_width)));
-        }
         return noOfColumns;
     }
 

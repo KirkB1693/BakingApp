@@ -15,7 +15,7 @@ import com.example.android.bakingapp.RoomDatabase.Recipes;
 import com.example.android.bakingapp.RoomDatabase.Steps;
 
 public class RecipeStepsRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private Recipes mRecipe;
+    private final Recipes mRecipe;
     private RecipeStepsRecyclerAdapter.RecipeStepClickListener mClickListener;
     private final Context mContext;
     private int mLastStepSelected;
@@ -80,9 +80,9 @@ public class RecipeStepsRecyclerAdapter extends RecyclerView.Adapter<RecyclerVie
 
         StepViewHolder(View itemView) {
             super(itemView);
-            linearLayout = (LinearLayout) itemView.findViewById(R.id.step_wrapper_ll);
-            stepNumberTextView = (TextView) itemView.findViewById(R.id.step_number_tv);
-            stepDescriptionTextView = (TextView) itemView.findViewById(R.id.step_short_description_tv);
+            linearLayout = itemView.findViewById(R.id.step_wrapper_ll);
+            stepNumberTextView = itemView.findViewById(R.id.step_number_tv);
+            stepDescriptionTextView = itemView.findViewById(R.id.step_short_description_tv);
             itemView.setOnClickListener(this);
         }
 
@@ -93,15 +93,6 @@ public class RecipeStepsRecyclerAdapter extends RecyclerView.Adapter<RecyclerVie
     }
 
 
-    // convenience method for getting data at click position
-    public Steps getStep(int id) {
-        return mRecipe.getStepsList().get(id);
-    }
-
-    public void setStepData(Recipes recipe) {
-        mRecipe = recipe;
-        notifyDataSetChanged();
-    }
 
     // allows clicks events to be caught
     public void setClickListener(RecipeStepsRecyclerAdapter.RecipeStepClickListener itemClickListener) {

@@ -50,9 +50,9 @@ public class Ingredient implements Parcelable
 
     /**
      *
-     * @param measure
-     * @param ingredient
-     * @param quantity
+     * @param measure The unit of measure of the ingredient (i.e. CUP, G, TBLSP, etc...)
+     * @param ingredient The name of the ingredient
+     * @param quantity The amount of the ingredient in the units specified in measure
      */
     public Ingredient(double quantity, String measure, String ingredient) {
         super();

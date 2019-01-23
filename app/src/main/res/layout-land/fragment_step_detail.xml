@@ -13,7 +13,7 @@
     android:orientation="vertical">
 
     <RelativeLayout
-        android:id="@+id/video_contanier_rl"
+        android:id="@+id/video_container_rl"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -35,13 +35,13 @@
         android:id="@+id/recipe_step_instructions_tv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginLeft="@dimen/normal_margin"
+        android:layout_marginTop="@dimen/normal_margin"
+        android:layout_marginRight="@dimen/normal_margin"
+        android:layout_marginBottom="@dimen/normal_margin"
         android:gravity="center_horizontal"
         android:textColor="@android:color/white"
-        android:textSize="20sp"
+        android:textSize="@dimen/recipe_step_instruction_textsize"
         tools:text="Recipe Step Instructions" />
 
     <LinearLayout
@@ -54,9 +54,9 @@
             style="@style/Widget.AppCompat.Button.Colored"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginBottom="16dp"
+            android:layout_marginLeft="@dimen/normal_margin"
+            android:layout_marginRight="@dimen/normal_margin"
+            android:layout_marginBottom="@dimen/normal_margin"
             android:layout_weight="1"
             android:text="@string/button_previous"
             android:onClick="onPreviousClicked"/>
@@ -66,9 +66,9 @@
             style="@style/Widget.AppCompat.Button.Colored"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="@dimen/normal_margin"
+            android:layout_marginRight="@dimen/normal_margin"
+            android:layout_marginBottom="@dimen/normal_margin"
             android:layout_weight="1"
             android:text="@string/button_next"
             android:onClick="onNextClicked"/>

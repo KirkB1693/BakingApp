@@ -58,11 +58,11 @@ public class Step implements Parcelable
 
     /**
      *
-     * @param id
-     * @param shortDescription
-     * @param description
-     * @param videoURL
-     * @param thumbnailURL
+     * @param id  The step number
+     * @param shortDescription A short description of the step
+     * @param description A more detailed description of the step
+     * @param videoURL A URL where a video of the step can be found
+     * @param thumbnailURL A URL where a thumbnail of the step can be found
      */
     public Step(int id, String shortDescription, String description, String videoURL, String thumbnailURL) {
         super();
@@ -81,11 +81,6 @@ public class Step implements Parcelable
         this.id = id;
     }
 
-    public Step withId(int id) {
-        this.id = id;
-        return this;
-    }
-
     public String getShortDescription() {
         return shortDescription;
     }
@@ -94,10 +89,6 @@ public class Step implements Parcelable
         this.shortDescription = shortDescription;
     }
 
-    public Step withShortDescription(String shortDescription) {
-        this.shortDescription = shortDescription;
-        return this;
-    }
 
     public String getDescription() {
         return description;
@@ -107,10 +98,6 @@ public class Step implements Parcelable
         this.description = description;
     }
 
-    public Step withDescription(String description) {
-        this.description = description;
-        return this;
-    }
 
     public String getVideoURL() {
         return videoURL;
@@ -120,10 +107,6 @@ public class Step implements Parcelable
         this.videoURL = videoURL;
     }
 
-    public Step withVideoURL(String videoURL) {
-        this.videoURL = videoURL;
-        return this;
-    }
 
     public String getThumbnailURL() {
         return thumbnailURL;
@@ -133,10 +116,6 @@ public class Step implements Parcelable
         this.thumbnailURL = thumbnailURL;
     }
 
-    public Step withThumbnailURL(String thumbnailURL) {
-        this.thumbnailURL = thumbnailURL;
-        return this;
-    }
 
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeValue(id);

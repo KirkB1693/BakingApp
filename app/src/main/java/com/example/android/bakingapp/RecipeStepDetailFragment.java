@@ -1,6 +1,7 @@
 package com.example.android.bakingapp;
 
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
@@ -14,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.example.android.bakingapp.IdlingResources.EspressoIdlingResource;
 import com.example.android.bakingapp.RoomDatabase.Steps;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
@@ -29,6 +31,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 /**
@@ -56,6 +59,7 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
     private boolean mTwoPane;
     private boolean mFullScreenVideo;
     private RelativeLayout mVideoContainer;
+    private ImageView mThumbnailImageView;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -65,7 +69,7 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         if (savedInstanceState != null) {
             mTwoPane = savedInstanceState.getBoolean(TWO_PANE_KEY);
@@ -79,7 +83,8 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
         final View rootView = inflater.inflate(R.layout.fragment_step_detail, container, false);
         setupUI(rootView);
 
-        mVideoContainer = rootView.findViewById(R.id.video_contanier_rl);
+        mVideoContainer = rootView.findViewById(R.id.video_container_rl);
+        mThumbnailImageView = rootView.findViewById(R.id.recipe_instructions_thumbnail_iv);
 
         return rootView;
     }
@@ -87,7 +92,9 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
     @Override
     public void onStart() {
         super.onStart();
+        EspressoIdlingResource.increment();
         setupExoPlayer(mCurrentStep.getVideoUrl());
+        EspressoIdlingResource.decrement();
     }
 
     @Override
@@ -103,7 +110,9 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
     public void onResume() {
         super.onResume();
         if (mPlayer == null) {
+            EspressoIdlingResource.increment();
             setupExoPlayer(mCurrentStep.getVideoUrl());
+            EspressoIdlingResource.decrement();
         }
     }
 
@@ -120,21 +129,21 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
         mPlayerView = view.findViewById(R.id.recipe_instructions_player);
         TextView instructionsTextView = view.findViewById(R.id.recipe_step_instructions_tv);
         instructionsTextView.setText(mCurrentStep.getDescription());
-
-        ImageView thumbnailImageView = view.findViewById(R.id.recipe_instructions_thumbnail_iv);
+        EspressoIdlingResource.increment();
         String thumbnailUrl = mCurrentStep.getThumbnailUrl();
         if (thumbnailUrl.isEmpty()) {
-            thumbnailImageView.setVisibility(View.GONE);
+            mThumbnailImageView.setVisibility(View.GONE);
         } else {
-            Picasso.with(getContext()).load(thumbnailUrl).into(thumbnailImageView);
-            if (thumbnailImageView.getDrawable() == null) {
+            Picasso.with(getContext()).load(thumbnailUrl).into(mThumbnailImageView);
+            if (mThumbnailImageView.getDrawable() == null) {
                 // if no image loaded then set ImageView to GONE
-                thumbnailImageView.setVisibility(View.GONE);
+                mThumbnailImageView.setVisibility(View.GONE);
             } else {
                 mPlayerView.setVisibility(View.INVISIBLE);
-                thumbnailImageView.setOnClickListener(this);
+                mThumbnailImageView.setOnClickListener(this);
             }
         }
+        EspressoIdlingResource.decrement();
 
         Button previousButton = view.findViewById(R.id.previous_button);
         Button nextButton = view.findViewById(R.id.next_button);
@@ -168,8 +177,6 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
                 mPlayer.setPlayWhenReady(true);
             }
 
-
-
             Uri uri = Uri.parse(videoUrl);
             MediaSource mediaSource = new ExtractorMediaSource.Factory(new DefaultHttpDataSourceFactory(STEP_DETAILS_EXOPLAYER_USER_AGENT)).createMediaSource(uri);
             mPlayer.prepare(mediaSource);
@@ -177,14 +184,16 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
             mPlayer.seekTo(mPlaybackPosition);
             if (mFullScreenVideo) {
                 DisplayMetrics displaymetrics = new DisplayMetrics();
-                getActivity().getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
-                int height = displaymetrics.heightPixels;
-                int width = displaymetrics.widthPixels;
-                RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) mPlayerView.getLayoutParams();
-                params.width = width;
-                params.height = height;
-                mPlayerView.setLayoutParams(params);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    Objects.requireNonNull(getActivity()).getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
 
+                    int height = displaymetrics.heightPixels;
+                    int width = displaymetrics.widthPixels;
+                    RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) mPlayerView.getLayoutParams();
+                    params.width = width;
+                    params.height = height;
+                    mPlayerView.setLayoutParams(params);
+                }
             } else {
                 mPlayerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
             }
@@ -192,7 +201,7 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
             mPlayerView.setPlayer(mPlayer);
         } else {
             mPlayerView.setVisibility(View.GONE);
-            if (mCurrentStep.getThumbnailUrl().isEmpty()) {
+            if (mCurrentStep.getThumbnailUrl().isEmpty() || mThumbnailImageView.getVisibility() == View.GONE) {
                 mVideoContainer.setVisibility(View.GONE);
             }
         }

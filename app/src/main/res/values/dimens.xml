@@ -1,8 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="fab_margin">16dp</dimen>
-    <dimen name="app_bar_height">200dp</dimen>
-    <dimen name="item_width">200dp</dimen>
-    <dimen name="text_margin">16dp</dimen>
     <dimen name="recipe_card_width">200dp</dimen>
+    <dimen name="widget_small_margin">4dp</dimen>
+    <dimen name="widget_title_textsize">16sp</dimen>
+    <dimen name="widget_ingredient_textsize">12sp</dimen>
+    <dimen name="recipe_step_textsize">20sp</dimen>
+    <dimen name="recipe_step_item_small_padding">4dp</dimen>
+    <dimen name="recipe_step_item_padding">16dp</dimen>
+    <dimen name="small_margin">4dp</dimen>
+    <dimen name="card_corner_radius">5dp</dimen>
+    <dimen name="card_elevation">5dp</dimen>
+    <dimen name="recipe_item_textsize">15sp</dimen>
+    <dimen name="normal_margin">16dp</dimen>
+    <dimen name="recipe_step_instruction_textsize">20sp</dimen>
+    <dimen name="recipe_steps_card_padding">8dp</dimen>
+    <dimen name="recipe_steps_title_textsize">24sp</dimen>
+    <dimen name="recipe_step_card_small_margin">8dp</dimen>
+    <dimen name="recipe_step_ingredient_textsize">16sp</dimen>
+    <dimen name="twopane_step_fragment_width">300dp</dimen>
 </resources>

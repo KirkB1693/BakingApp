@@ -74,8 +74,8 @@ public class SelectRecipeRecyclerAdapter extends RecyclerView.Adapter<SelectReci
 
         ViewHolder(View itemView) {
             super(itemView);
-            myImageView = (ImageView) itemView.findViewById(R.id.recipe_iv);
-            myTextView = (TextView) itemView.findViewById(R.id.recipe_tv);
+            myImageView = itemView.findViewById(R.id.recipe_iv);
+            myTextView = itemView.findViewById(R.id.recipe_tv);
             itemView.setOnClickListener(this);
         }
 
@@ -85,11 +85,6 @@ public class SelectRecipeRecyclerAdapter extends RecyclerView.Adapter<SelectReci
         }
     }
 
-
-    // convenience method for getting data at click position
-    public Recipes getRecipeItem(int id) {
-        return mRecipes.get(id);
-    }
 
     public void setRecipesData(List<Recipes> recipes) {
         mRecipes = recipes;
@@ -106,16 +101,4 @@ public class SelectRecipeRecyclerAdapter extends RecyclerView.Adapter<SelectReci
         void onRecipeItemClick(int position);
     }
 
-    public void clear() {
-        if (mRecipes != null) {
-            final int favoriteSize = mRecipes.size();
-            if (favoriteSize > 0) {
-                for (int i = 0; i < favoriteSize; i++) {
-                    mRecipes.remove(0);
-                }
-
-                notifyItemRangeRemoved(0, favoriteSize);
-            }
-        }
-    }
 }
