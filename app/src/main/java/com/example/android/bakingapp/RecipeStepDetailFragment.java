@@ -81,10 +81,11 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
         mFullScreenVideo = getResources().getBoolean(R.bool.fullScreenVideo);
 
         final View rootView = inflater.inflate(R.layout.fragment_step_detail, container, false);
+        mThumbnailImageView = rootView.findViewById(R.id.recipe_instructions_thumbnail_iv);
         setupUI(rootView);
 
         mVideoContainer = rootView.findViewById(R.id.video_container_rl);
-        mThumbnailImageView = rootView.findViewById(R.id.recipe_instructions_thumbnail_iv);
+
 
         return rootView;
     }
