@@ -31,6 +31,7 @@ public class RecipeStepListActivity extends AppCompatActivity implements RecipeS
      * device.
      */
     private boolean mTwoPane;
+    private boolean mVideoFullScreen;
 
     public static final String RECIPE_DATA_KEY = "recipe_data_key";
     private static final String RECIPE_STEPS_TAG = "recipe_steps_fragment";
@@ -51,10 +52,6 @@ public class RecipeStepListActivity extends AppCompatActivity implements RecipeS
         Intent intent = getIntent();
         mRecipe = intent.getParcelableExtra(RECIPE_DATA_KEY);
 
-
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().show();
-        }
         this.setTitle(mRecipe.getRecipeName());
 
         // Show the Up button in the action bar.
@@ -63,8 +60,8 @@ public class RecipeStepListActivity extends AppCompatActivity implements RecipeS
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-
         mTwoPane = getResources().getBoolean(R.bool.twoPaneMode);
+        mVideoFullScreen = getResources().getBoolean(R.bool.fullScreenVideo);
 
         EspressoIdlingResource.increment();
         setupStepsRecyclerViewAdapter();
@@ -87,7 +84,17 @@ public class RecipeStepListActivity extends AppCompatActivity implements RecipeS
             if (mTwoPane) {
                 mCurrentStep = savedInstanceState.getInt(CURRENT_STEP_KEY);
                 setStepSelected(mCurrentStep);
+            } else {
+                Fragment detailFragment = getSupportFragmentManager().findFragmentByTag(STEP_DETAILS_TAG);
+                if (detailFragment instanceof RecipeStepDetailFragment) {
+                    if (mVideoFullScreen) {
+                        if (actionBar != null) {
+                            actionBar.hide();
+                        }
+                    }
+                }
             }
+
         }
         EspressoIdlingResource.decrement();
 
@@ -119,7 +126,6 @@ public class RecipeStepListActivity extends AppCompatActivity implements RecipeS
             mCurrentStep = ((RecipeStepDetailFragment) fragment).getCurrentStepIndex();
             setStepSelected(mCurrentStep);
         } else {
-
                 if(getSupportActionBar()!=null) {
                     getSupportActionBar().show();
                 }
@@ -162,8 +168,7 @@ public class RecipeStepListActivity extends AppCompatActivity implements RecipeS
         if (mTwoPane) {
             setStepDetailsFragment(R.id.step_detail_fragment, mRecipe.getStepsList(), position);
         } else {
-            boolean videoFullScreen = getResources().getBoolean(R.bool.fullScreenVideo);
-            if (videoFullScreen) {
+            if (mVideoFullScreen) {
                 if (getSupportActionBar() != null) {
                     getSupportActionBar().hide();
                 }

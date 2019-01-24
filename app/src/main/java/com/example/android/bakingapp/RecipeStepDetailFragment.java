@@ -81,7 +81,7 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
         mFullScreenVideo = getResources().getBoolean(R.bool.fullScreenVideo);
 
         final View rootView = inflater.inflate(R.layout.fragment_step_detail, container, false);
-        mThumbnailImageView = rootView.findViewById(R.id.recipe_instructions_thumbnail_iv);
+
         setupUI(rootView);
 
         mVideoContainer = rootView.findViewById(R.id.video_container_rl);
@@ -130,6 +130,7 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
         mPlayerView = view.findViewById(R.id.recipe_instructions_player);
         TextView instructionsTextView = view.findViewById(R.id.recipe_step_instructions_tv);
         instructionsTextView.setText(mCurrentStep.getDescription());
+        mThumbnailImageView = view.findViewById(R.id.recipe_instructions_thumbnail_iv);
         EspressoIdlingResource.increment();
         String thumbnailUrl = mCurrentStep.getThumbnailUrl();
         if (thumbnailUrl.isEmpty()) {
