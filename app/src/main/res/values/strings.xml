@@ -13,4 +13,6 @@
     <string name="button_next">Next</string>
     <string name="recipe_image_content_description">Recipe Image</string>
     <string name="card_steps_title">Steps</string>
+    <string name="widget_ingredient_dividing_char">-</string>
+    <string name="widget_empty_text">Can\'t Find Any Ingredients!!!</string>
 </resources>

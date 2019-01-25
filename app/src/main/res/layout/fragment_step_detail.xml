@@ -50,6 +50,7 @@
             tools:text="Recipe Step Instructions" />
 
         <LinearLayout
+            android:id="@+id/button_container_ll"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">

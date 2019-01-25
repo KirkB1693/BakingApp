@@ -18,4 +18,5 @@
     <dimen name="recipe_step_card_small_margin">8dp</dimen>
     <dimen name="recipe_step_ingredient_textsize">16sp</dimen>
     <dimen name="twopane_step_fragment_width">300dp</dimen>
+    <dimen name="widget_item_padding">4dp</dimen>
 </resources>

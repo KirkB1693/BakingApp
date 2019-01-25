@@ -18,5 +18,8 @@ public interface RecipesDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertRecipes(List<Recipes> recipeDataList);
+
+    @Query("SELECT * FROM " + RecipeContract.RecipesTable.RECIPE_TABLE_NAME)
+    List<Recipes> getAllRecipes();
 }
 

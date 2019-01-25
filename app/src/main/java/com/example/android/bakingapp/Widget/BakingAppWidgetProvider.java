@@ -2,7 +2,6 @@ package com.example.android.bakingapp.Widget;
 
 import android.annotation.TargetApi;
 import android.app.PendingIntent;
-import android.app.TaskStackBuilder;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
@@ -12,17 +11,18 @@ import android.widget.RemoteViews;
 
 import com.example.android.bakingapp.R;
 import com.example.android.bakingapp.RecipeStepListActivity;
-import com.example.android.bakingapp.RoomDatabase.Ingredients;
 import com.example.android.bakingapp.RoomDatabase.Recipes;
-
-import java.util.List;
 
 public class BakingAppWidgetProvider extends AppWidgetProvider {
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     private static void updateBakingAppWidget(Context context, AppWidgetManager appWidgetManager, Recipes recipe, int appWidgetId) {
-        RemoteViews remoteViews = getRecipeRemoteView(context, recipe, appWidgetId);
+        RemoteViews remoteViews = getRecipeListRemoteView(context, recipe);
+
+        remoteViews.setEmptyView(R.id.widget_ingredients_lv, R.id.empty_widget);
+
         appWidgetManager.updateAppWidget(appWidgetId, remoteViews);
+        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.widget_ingredients_lv);
     }
 
     public static void updateBakingAppWidgets(Context context, AppWidgetManager appWidgetManager,
@@ -32,41 +32,33 @@ public class BakingAppWidgetProvider extends AppWidgetProvider {
         }
     }
 
-    private static RemoteViews getRecipeRemoteView(Context context, Recipes recipe, int appWidgetId) {
-        Intent intent = new Intent(context, RecipeStepListActivity.class);
-        intent.putExtra(RecipeStepListActivity.RECIPE_DATA_KEY, recipe);
 
-        PendingIntent pendingIntent = TaskStackBuilder.create(context).addNextIntentWithParentStack(intent).getPendingIntent(appWidgetId, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.recipe_widget);
-        //update text with recipe name and ingredients
-        remoteViews.setTextViewText(R.id.widget_ingredients_title_tv, recipe.getRecipeName());
-        remoteViews.setTextViewText(R.id.widget_ingredients_tv, buildIngredientsList(recipe));
-        remoteViews.setOnClickPendingIntent(R.id.widget_ingredients_tv, pendingIntent);
-        return remoteViews;
+    /**
+     * Creates and returns the RemoteViews to be displayed in the GridView mode widget
+     *
+     * @param context The context
+     * @return The RemoteViews for the ListView mode widget
+     */
+    private static RemoteViews getRecipeListRemoteView(Context context, Recipes recipe) {
+        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.recipe_widget);
+        views.setTextViewText(R.id.widget_ingredients_title_tv, recipe.getRecipeName());
+        // Set the BakingAppWidgetService intent to act as the adapter for the ListView
+        Intent intent = new Intent(context, BakingAppWidgetService.class);
+        intent.putExtra(BakingAppWidgetService.RECIPE_TO_USE, recipe.getRecipeId()-1);
+        views.setRemoteAdapter(R.id.widget_ingredients_lv, intent);
+        // Set the RecipeStepListActivity intent to launch when clicked
+        Intent appIntent = new Intent(context, RecipeStepListActivity.class);
+        appIntent.putExtra(RecipeStepListActivity.RECIPE_DATA_KEY, recipe);
+        PendingIntent appPendingIntent = PendingIntent.getActivity(context, 0, appIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        views.setOnClickPendingIntent(R.id.widget_wrapper_ll, appPendingIntent);
+        return views;
     }
 
-    private static CharSequence buildIngredientsList(Recipes recipe) {
-        List<Ingredients> ingredientsList = recipe.getIngredientsList();
-        StringBuilder ingredientsListBuilder = new StringBuilder();
-        for (int i = 0; i < ingredientsList.size(); i++) {
-            Ingredients currentIngredient = ingredientsList.get(i);
-            ingredientsListBuilder.append(currentIngredient.getQuantity());
-            ingredientsListBuilder.append(" ");
-            ingredientsListBuilder.append(currentIngredient.getMeasure().toUpperCase());
-            ingredientsListBuilder.append(" - ");
-            String ingredientName = currentIngredient.getIngredientName();
-            ingredientName = ingredientName.substring(0 , 1).toUpperCase() + ingredientName.substring(1).toLowerCase();
-            ingredientsListBuilder.append(ingredientName);
-            if (i != ingredientsList.size()-1) {
-                ingredientsListBuilder.append("\n");
-            }
-        }
-        return String.valueOf(ingredientsListBuilder);
-    }
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
+        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_ingredients_lv);
         super.onUpdate(context, appWidgetManager, appWidgetIds);
     }
+
 }

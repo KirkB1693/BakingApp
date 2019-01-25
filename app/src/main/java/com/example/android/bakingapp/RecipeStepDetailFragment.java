@@ -1,5 +1,6 @@
 package com.example.android.bakingapp;
 
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import android.widget.TextView;
 
 import com.example.android.bakingapp.IdlingResources.EspressoIdlingResource;
 import com.example.android.bakingapp.RoomDatabase.Steps;
+import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlayerFactory;
@@ -27,6 +29,7 @@ import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
+import com.google.android.exoplayer2.util.Util;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -48,10 +51,12 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
     private static final String STEP_POSITION_ID = "step_id";
     private static final String STEP_VIDEO_POSITION_KEY = "step_video_position";
     private static final String STEP_DETAILS_EXOPLAYER_USER_AGENT = "step_details_exoplayer";
+    private static final String KEY_AUTO_PLAY = "auto_play";
 
     private PlayerView mPlayerView;
     private SimpleExoPlayer mPlayer;
     private long mPlaybackPosition;
+    private boolean mStartAutoPlay;
 
     private List<Steps> mStepList;
     private Steps mCurrentStep;
@@ -76,6 +81,9 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
             mStepList = savedInstanceState.getParcelableArrayList(STEP_DATA_KEY);
             mCurrentStepIndex = savedInstanceState.getInt(STEP_POSITION_ID);
             mPlaybackPosition = savedInstanceState.getLong(STEP_VIDEO_POSITION_KEY);
+            mStartAutoPlay = savedInstanceState.getBoolean(KEY_AUTO_PLAY);
+        } else {
+            clearStartPosition();
         }
         mCurrentStep = mStepList.get(mCurrentStepIndex);
         mFullScreenVideo = getResources().getBoolean(R.bool.fullScreenVideo);
@@ -93,36 +101,40 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
     @Override
     public void onStart() {
         super.onStart();
-        EspressoIdlingResource.increment();
-        setupExoPlayer(mCurrentStep.getVideoUrl());
-        EspressoIdlingResource.decrement();
+        if (Util.SDK_INT > 23) {
+            // initialize player
+            setupExoPlayer(mCurrentStep.getVideoUrl());
+        }
+
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        if (mPlayer != null) {
-            mPlayer.release();
-            mPlayer = null;
+        if (mPlayer != null && Util.SDK_INT <= 23) {
+            releasePlayer();
         }
+    }
+
+    private void releasePlayer() {
+        updateStartPosition();
+        mPlayer.release();
+        mPlayer = null;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (mPlayer == null) {
-            EspressoIdlingResource.increment();
+        if (Util.SDK_INT <= 23 || mPlayer == null) {
             setupExoPlayer(mCurrentStep.getVideoUrl());
-            EspressoIdlingResource.decrement();
         }
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        if (mPlayer != null) {
-            mPlayer.release();
-            mPlayer = null;
+        if (mPlayer != null && Util.SDK_INT >= 24) {
+            releasePlayer();
         }
     }
 
@@ -176,7 +188,7 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
             if (mPlayer == null) {
                 // if player doesn't exist yet, create it
                 mPlayer = ExoPlayerFactory.newSimpleInstance(new DefaultRenderersFactory(getContext()), new DefaultTrackSelector(), new DefaultLoadControl());
-                mPlayer.setPlayWhenReady(true);
+                mPlayer.setPlayWhenReady(mStartAutoPlay);
             }
 
             Uri uri = Uri.parse(videoUrl);
@@ -228,15 +240,12 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
+        updateStartPosition();
+        outState.putBoolean(KEY_AUTO_PLAY, mStartAutoPlay);
         outState.putBoolean(TWO_PANE_KEY, mTwoPane);
         outState.putInt(STEP_POSITION_ID, mCurrentStepIndex);
         outState.putParcelableArrayList(STEP_DATA_KEY, (ArrayList<? extends Parcelable>) mStepList);
-        if (mPlayer != null) {
-            mPlaybackPosition = mPlayer.getCurrentPosition();
-            outState.putLong(STEP_VIDEO_POSITION_KEY, mPlaybackPosition);
-        } else {
-            outState.putLong(STEP_VIDEO_POSITION_KEY, 0);
-        }
+        outState.putLong(STEP_VIDEO_POSITION_KEY, mPlaybackPosition);
 
     }
 
@@ -245,6 +254,43 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
     public void onClick(View view) {
         view.setVisibility(View.GONE);
         mPlayerView.setVisibility(View.VISIBLE);
+    }
+
+    private void updateStartPosition() {
+        if (mPlayer != null) {
+            mStartAutoPlay = mPlayer.getPlayWhenReady();
+            mPlaybackPosition = mPlayer.getContentPosition();
+        }
+    }
+
+    private void clearStartPosition() {
+        mStartAutoPlay = true;
+        mPlaybackPosition = C.TIME_UNSET;
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        mFullScreenVideo = getResources().getBoolean(R.bool.fullScreenVideo);
+        setExoPlayerSize();
+    }
+
+    private void setExoPlayerSize() {
+        if (mFullScreenVideo) {
+            DisplayMetrics displaymetrics = new DisplayMetrics();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                Objects.requireNonNull(getActivity()).getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+
+                int height = displaymetrics.heightPixels;
+                int width = displaymetrics.widthPixels;
+                RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) mPlayerView.getLayoutParams();
+                params.width = width;
+                params.height = height;
+                mPlayerView.setLayoutParams(params);
+            }
+        } else {
+            mPlayerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
+        }
     }
 
 

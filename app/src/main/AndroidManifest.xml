@@ -25,6 +25,10 @@
                 android:resource="@xml/baking_app_widget_info" />
         </receiver>
 
+        <service
+            android:name=".Widget.BakingAppWidgetService"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
+
         <activity android:name=".RecipesActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -34,7 +38,9 @@
         </activity>
 
         <activity android:name=".RecipeStepListActivity"
-            android:parentActivityName=".RecipesActivity">
+            android:parentActivityName=".RecipesActivity"
+            android:resizeableActivity="true"
+            android:supportsPictureInPicture="true">
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

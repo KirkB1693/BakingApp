@@ -1,6 +1,7 @@
 package com.example.android.bakingapp;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -9,11 +10,14 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 
 import com.example.android.bakingapp.Adapters.RecipeStepsRecyclerAdapter;
 import com.example.android.bakingapp.IdlingResources.EspressoIdlingResource;
 import com.example.android.bakingapp.RoomDatabase.Recipes;
 import com.example.android.bakingapp.RoomDatabase.Steps;
+import com.google.android.exoplayer2.util.Util;
 
 import java.util.List;
 
@@ -39,6 +43,7 @@ public class RecipeStepListActivity extends AppCompatActivity implements RecipeS
     private static final String CURRENT_STEP_KEY = "current_step";
 
     private Recipes mRecipe;
+    private RelativeLayout mVideoContainer;
 
     private int mCurrentStep;
 
@@ -66,6 +71,7 @@ public class RecipeStepListActivity extends AppCompatActivity implements RecipeS
         EspressoIdlingResource.increment();
         setupStepsRecyclerViewAdapter();
 
+
         if (savedInstanceState == null) {
 
             if (mTwoPane) {
@@ -91,7 +97,12 @@ public class RecipeStepListActivity extends AppCompatActivity implements RecipeS
                         if (actionBar != null) {
                             actionBar.hide();
                         }
+                    } else {
+                        if (actionBar != null) {
+                            actionBar.show();
+                        }
                     }
+
                 }
             }
 
@@ -126,9 +137,9 @@ public class RecipeStepListActivity extends AppCompatActivity implements RecipeS
             mCurrentStep = ((RecipeStepDetailFragment) fragment).getCurrentStepIndex();
             setStepSelected(mCurrentStep);
         } else {
-                if(getSupportActionBar()!=null) {
-                    getSupportActionBar().show();
-                }
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().show();
+            }
         }
     }
 
@@ -168,11 +179,6 @@ public class RecipeStepListActivity extends AppCompatActivity implements RecipeS
         if (mTwoPane) {
             setStepDetailsFragment(R.id.step_detail_fragment, mRecipe.getStepsList(), position);
         } else {
-            if (mVideoFullScreen) {
-                if (getSupportActionBar() != null) {
-                    getSupportActionBar().hide();
-                }
-            }
             setStepDetailsFragment(R.id.recipe_steps_fragment_container, mRecipe.getStepsList(), position);
         }
     }
@@ -191,4 +197,81 @@ public class RecipeStepListActivity extends AppCompatActivity implements RecipeS
         setStepDetailsFragment(R.id.recipe_steps_fragment_container, mRecipe.getStepsList(), mCurrentStep - 1);
     }
 
+    @Override
+    public void onUserLeaveHint() {
+        if (Util.SDK_INT >= 24) {
+            if (iWantToBeInPipModeNow()) {
+                enterPictureInPictureMode();
+            }
+        }
+    }
+
+    private boolean iWantToBeInPipModeNow() {
+        if (findViewById(R.id.recipe_instructions_player) != null && !mTwoPane) {
+            mVideoContainer = findViewById(R.id.video_container_rl);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void onPictureInPictureModeChanged (boolean isInPictureInPictureMode, Configuration newConfig) {
+        if (isInPictureInPictureMode) {
+            // Hide the full-screen UI (controls, etc.) while in picture-in-picture mode.
+            hideAllUIExceptVideo();
+        } else {
+            // Restore the full-screen UI.
+            restoreAllUI();
+        }
+    }
+
+    private void restoreAllUI() {
+        if(mTwoPane) {
+
+        } else {
+            if (!mVideoFullScreen) {
+                getSupportActionBar().show();
+            }
+            if (mVideoContainer != null) {
+                setMargins(mVideoContainer, (int) getResources().getDimension(R.dimen.normal_margin), (int) getResources().getDimension(R.dimen.normal_margin), (int) getResources().getDimension(R.dimen.normal_margin), 0);
+            }
+            findViewById(R.id.recipe_step_instructions_tv).setVisibility(View.VISIBLE);
+            findViewById(R.id.button_container_ll).setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void hideAllUIExceptVideo() {
+        if(mTwoPane) {
+
+        } else {
+            getSupportActionBar().hide();
+            if (mVideoContainer != null) {
+                setMargins(mVideoContainer, 0, 0, 0, 0);
+            }
+            findViewById(R.id.recipe_step_instructions_tv).setVisibility(View.GONE);
+            findViewById(R.id.button_container_ll).setVisibility(View.GONE);
+        }
+    }
+
+    public static void setMargins (View v, int left, int top, int right, int bottom) {
+        if (v.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
+            ViewGroup.MarginLayoutParams p = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
+            p.setMargins(left, top, right, bottom);
+            v.requestLayout();
+        }
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        boolean fullscreen = getResources().getBoolean(R.bool.fullScreenVideo);
+        if (fullscreen) {
+            getSupportActionBar().hide();
+
+
+        } else {
+            getSupportActionBar().show();
+        }
+
+    }
 }

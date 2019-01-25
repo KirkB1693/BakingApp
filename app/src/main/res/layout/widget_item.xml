@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:background="@color/primary_light"
+    android:padding="@dimen/widget_item_padding">
+
+    <TextView
+        android:id="@+id/widget_item_quantity_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="#"
+        android:textColor="@color/primary_text"
+        android:textSize="@dimen/widget_ingredient_textsize"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/primary_text"
+        android:text="@string/widget_ingredient_dividing_char"
+        android:textSize="@dimen/widget_ingredient_textsize"/>
+
+    <TextView
+        android:id="@+id/widget_item_measure_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="MEAS"
+        android:textColor="@color/primary_text"
+        android:textSize="@dimen/widget_ingredient_textsize"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/primary_text"
+        android:text="@string/widget_ingredient_dividing_char"
+        android:textSize="@dimen/widget_ingredient_textsize"/>
+
+    <TextView
+        android:id="@+id/widget_item_ingredient_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="Ingredient"
+        android:textColor="@color/primary_text"
+        android:textSize="@dimen/widget_ingredient_textsize"/>
+
+</LinearLayout>
