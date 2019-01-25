@@ -4,7 +4,9 @@ import android.appwidget.AppWidgetManager;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -32,6 +34,7 @@ import com.example.android.bakingapp.Utilities.GridSpacesItemDecoration;
 import com.example.android.bakingapp.Utilities.GridUtils;
 import com.example.android.bakingapp.ViewModels.RecipesViewModel;
 import com.example.android.bakingapp.Widget.BakingAppWidgetProvider;
+import com.example.android.bakingapp.Widget.BakingAppWidgetService;
 import com.example.android.bakingapp.databinding.ActivityRecipesBinding;
 
 import java.util.ArrayList;
@@ -256,9 +259,14 @@ public class RecipesActivity extends AppCompatActivity  implements SelectRecipeR
 
         EspressoIdlingResource.increment();
         // Update widgets to show proper ingredients list
-        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
-        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this, BakingAppWidgetProvider.class));
-        BakingAppWidgetProvider.updateBakingAppWidgets(this, appWidgetManager, currentRecipe, appWidgetIds);
+        updateRecipeWidget(this, currentRecipe);
+        SharedPreferences settings = getSharedPreferences(BakingAppWidgetService.RECIPE_TO_USE_ACTION,
+                Context.MODE_PRIVATE);
+
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putInt(BakingAppWidgetService.RECIPE_TO_USE, position);
+        editor.commit();
+
 
         // Configure widget
         if (mConfigureWidget) {
@@ -274,5 +282,19 @@ public class RecipesActivity extends AppCompatActivity  implements SelectRecipeR
             startActivity(intent);
         }
         EspressoIdlingResource.decrement();
+    }
+
+    public static void updateRecipeWidget(Context context, Recipes recipe) {
+        Intent intent = new Intent(context, BakingAppWidgetProvider.class);
+        intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+        int[] ids = appWidgetManager.getAppWidgetIds(new ComponentName(context, BakingAppWidgetProvider.class));
+        if (ids != null && ids.length > 0) {
+            intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
+            context.sendBroadcast(intent);
+            BakingAppWidgetProvider.updateBakingAppWidgets(context, appWidgetManager, recipe, ids);
+            appWidgetManager.notifyAppWidgetViewDataChanged(ids, R.id.widget_ingredients_lv);
+        }
+
     }
 }
